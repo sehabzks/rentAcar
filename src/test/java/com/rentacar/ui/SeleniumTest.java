@@ -9,6 +9,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.By;
 import java.time.Duration;
+import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-@Disabled("Selenium tests are disabled for CI/CD")
+// @Disabled("Selenium tests are disabled for CI/CD") // Removed for Docker
+// integration
 public class SeleniumTest {
 
     @Autowired
@@ -35,14 +37,31 @@ public class SeleniumTest {
     private com.rentacar.model.Sinif testSinif;
 
     private WebDriver driver;
-    private final String BASE_URL = "http://localhost:9090";
+    private String baseUrl; // Removed 'final' and renamed to standard camelCase "baseUrl"
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws java.net.MalformedURLException {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
         options.addArguments("--window-size=1920,1080");
-        driver = new ChromeDriver(options);
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--no-sandbox");
+
+        String ciEnv = System.getenv("CI");
+
+        if (ciEnv != null) {
+            // Running in Docker/Jenkins
+            // Connect to the "selenium" sidecar container
+            driver = new org.openqa.selenium.remote.RemoteWebDriver(
+                    new URL("http://selenium:4444/wd/hub"), options);
+            // Jenkins container is named "jenkins" inside the Docker network
+            baseUrl = "http://jenkins:9090";
+        } else {
+            // Local execution
+            driver = new ChromeDriver(options);
+            baseUrl = "http://localhost:9090";
+        }
+
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
         // Seed Data
@@ -92,7 +111,7 @@ public class SeleniumTest {
 
     @Test
     public void testHomePageTitle() {
-        driver.get(BASE_URL);
+        driver.get(baseUrl);
         String title = driver.getTitle();
         assertTrue(title.contains("LuxeDrive"));
     }
@@ -100,7 +119,7 @@ public class SeleniumTest {
     @Test
     public void testAddCarAndVerify() throws InterruptedException {
         // 1. Go to Login Page
-        driver.get(BASE_URL + "/login.html");
+        driver.get(baseUrl + "/login.html");
         Thread.sleep(2000);
 
         // 2. Login as Admin
@@ -113,7 +132,7 @@ public class SeleniumTest {
         // 3. Go to Admin Page (should be redirected automatically or we can navigate)
         // Since login redirects to admin.html for admins, we just wait/verify
         // But to be safe in test flow:
-        driver.get(BASE_URL + "/admin.html");
+        driver.get(baseUrl + "/admin.html");
         Thread.sleep(2000);
 
         // 4. Fill Form
@@ -140,7 +159,7 @@ public class SeleniumTest {
                         .visibilityOfElementLocated(By.id("successMsg")));
 
         // 7. Go to Home Page
-        driver.get(BASE_URL);
+        driver.get(baseUrl);
         Thread.sleep(2000);
 
         // 8. Verify Car is Listed
