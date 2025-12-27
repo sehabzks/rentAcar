@@ -21,7 +21,7 @@ pipeline {
 
         stage('Unit & Integration Tests') {
             steps {
-                sh 'mvn test "-Dtest=!SeleniumTest"'
+                sh 'mvn test'
             }
         }
 
