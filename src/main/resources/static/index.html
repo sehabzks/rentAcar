@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeDrive | Premium Araç Kiralama</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="#" class="logo">LuxeDrive</a>
+            <nav class="nav">
+                <a href="#home" class="nav-link active">Ana Sayfa</a>
+                <a href="#filo" class="nav-link">Filomuz</a>
+                <a href="#hizmetler" class="nav-link">Hizmetler</a>
+                <a href="#iletisim" class="nav-link">İletişim</a>
+            </nav>
+            <div id="auth-buttons">
+                <a href="login.html" class="btn btn-primary" id="loginBtn">Giriş Yap</a>
+                <button class="btn btn-primary" id="logoutBtn" style="display: none;" onclick="logout()">Çıkış</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container hero-content">
+                <h1 class="hero-title">Hayallerinizdeki Yola <br><span>Bizimle Çıkın</span></h1>
+                <p class="hero-subtitle">En yeni modeller, en uygun fiyatlar ve premium hizmet kalitesiyle yolculuğun
+                    keyfini çıkarın.</p>
+                <div class="search-box">
+                    <div class="search-item" style="flex: 1;">
+                        <label>Araç Plakası</label>
+                        <input type="text" id="plateInput" placeholder="Örn: 34 ABC 123">
+                    </div>
+                    <button class="btn btn-search" id="searchBtn">Araç Bul</button>
+                    <button class="btn btn-search" id="resetBtn"
+                        style="margin-left: 10px; background-color: #6c757d;">Tümünü Göster</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="filo" class="fleet">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Öne Çıkan Araçlar</h2>
+                    <p class="section-desc">Konfor ve performansı bir arada sunan geniş araç filomuzu keşfedin.</p>
+                </div>
+
+                <div id="car-list" class="car-grid">
+                    <!-- Araçlar JavaScript ile buraya yüklenecek -->
+                    <div class="loading">Araçlar yükleniyor...</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hizmetler" class="services">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Hizmetlerimiz</h2>
+                    <p class="section-desc">Size özel sunduğumuz ayrıcalıklı hizmetler.</p>
+                </div>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">🚗</div>
+                        <h3>7/24 Yol Yardım</h3>
+                        <p>Yolculuğunuz boyunca her an yanınızdayız. Olası bir aksilikte tek telefonla destek ekibimiz
+                            yanınızda.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">✈️</div>
+                        <h3>Havalimanı Transfer</h3>
+                        <p>Uçaktan indiğiniz an aracınız hazır. Konforlu ve hızlı transfer hizmetimizle zaman
+                            kaybetmeyin.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🛡️</div>
+                        <h3>Tam Kapsamlı Sigorta</h3>
+                        <p>Güvenliğiniz bizim için önemli. Tüm araçlarımız tam kasko ve sigorta güvencesi altındadır.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="iletisim" class="contact">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">İletişim</h2>
+                    <p class="section-desc">Sorularınız için bizimle iletişime geçin.</p>
+                </div>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <div class="info-item">
+                            <h3>Adres</h3>
+                            <p>Maslak Mah. Büyükdere Cad. No:123<br>Sarıyer / İstanbul</p>
+                        </div>
+                        <div class="info-item">
+                            <h3>Telefon</h3>
+                            <p>+90 (212) 555 00 00</p>
+                        </div>
+                        <div class="info-item">
+                            <h3>E-posta</h3>
+                            <p>info@luxedrive.com</p>
+                        </div>
+                    </div>
+                    <form class="contact-form"
+                        onsubmit="event.preventDefault(); alert('Mesajınız alındı! En kısa sürede döneceğiz.');">
+                        <input type="text" placeholder="Adınız Soyadınız" required>
+                        <input type="email" placeholder="E-posta Adresiniz" required>
+                        <textarea rows="5" placeholder="Mesajınız" required></textarea>
+                        <button type="submit" class="btn btn-primary">Gönder</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 LuxeDrive Rent a Car. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        function checkAuth() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                document.getElementById('loginBtn').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
+                if (user.role === 'ADMIN') {
+                    // Add Admin Link if desired
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+
+</html>

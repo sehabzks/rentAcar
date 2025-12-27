@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Araç Yönetimi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">LuxeDrive Admin</a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Ana Sayfa</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="admin-container">
+            <h2 class="section-title">Yeni Araç Ekle</h2>
+
+            <div id="successMsg" class="success-message">Araç başarıyla eklendi!</div>
+            <div id="errorMsg" class="error-message">Bir hata oluştu.</div>
+
+            <form id="addCarForm">
+                <div class="form-group">
+                    <label>Plaka</label>
+                    <input type="text" id="plaka" required placeholder="34 ABC 123">
+                </div>
+                <div class="form-group">
+                    <label>Yıl</label>
+                    <input type="number" id="yil" required placeholder="2024">
+                </div>
+                <div class="form-group">
+                    <label>Durum</label>
+                    <select id="durum">
+                        <option value="Müsait">Müsait</option>
+                        <option value="Kirada">Kirada</option>
+                        <option value="Bakımda">Bakımda</option>
+                    </select>
+                </div>
+                <!-- Simplified for demo: assuming IDs 1 exist for relations -->
+                <input type="hidden" id="modelId" value="1">
+                <input type="hidden" id="subeId" value="1">
+                <input type="hidden" id="sinifId" value="1">
+
+                <button type="submit" class="btn btn-primary" style="width: 100%">Kaydet</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // Check Auth
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user || user.role !== 'ADMIN') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('addCarForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const carData = {
+                plaka: document.getElementById('plaka').value,
+                yil: parseInt(document.getElementById('yil').value),
+                durum: document.getElementById('durum').value,
+                model: { id: parseInt(document.getElementById('modelId').value) },
+                sube: { id: parseInt(document.getElementById('subeId').value) },
+                sinif: { id: parseInt(document.getElementById('sinifId').value) }
+            };
+
+            try {
+                const response = await fetch('/api/araclar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(carData)
+                });
+
+                if (response.ok) {
+                    document.getElementById('successMsg').style.display = 'block';
+                    document.getElementById('errorMsg').style.display = 'none';
+                    document.getElementById('addCarForm').reset();
+                    setTimeout(() => {
+                        document.getElementById('successMsg').style.display = 'none';
+                    }, 3000);
+                } else {
+                    throw new Error('Failed to save');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorMsg').style.display = 'block';
+                document.getElementById('successMsg').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

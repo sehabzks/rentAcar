@@ -1,0 +1,43 @@
+pipeline {
+    agent { 
+        node { 
+            label '' 
+            customWorkspace 'C:/Users/seha2/.gemini/antigravity/scratch/rentAcar' 
+        } 
+    }
+
+    tools {
+        maven 'Maven 3.x' 
+        jdk 'Java 17' 
+    }
+
+    stages {
+        // 'Checkout' stage removed because we will run directly in the project folder
+        // using "Use custom workspace" setting in Jenkins.
+
+        stage('Build') {
+            steps {
+                bat 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Unit & Integration Tests') {
+            steps {
+                bat 'mvn test -Dtest=!SeleniumTest'
+            }
+        }
+
+        stage('UI Tests') {
+            steps {
+                // Ensure ChromeDriver is installed and available
+                bat 'mvn test -Dtest=SeleniumTest'
+            }
+        }
+    }
+
+    post {
+        always {
+            junit 'target/surefire-reports/*.xml'
+        }
+    }
+}
