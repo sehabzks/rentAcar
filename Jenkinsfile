@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         CI = 'true'
+        DB_HOST = 'rentacar-postgres'
     }
 
     triggers {
