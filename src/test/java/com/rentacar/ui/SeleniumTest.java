@@ -36,8 +36,11 @@ public class SeleniumTest {
     private com.rentacar.model.Sube testSube;
     private com.rentacar.model.Sinif testSinif;
 
+    @org.springframework.boot.test.web.server.LocalServerPort
+    private int port;
+
     private WebDriver driver;
-    private String baseUrl; // Removed 'final' and renamed to standard camelCase "baseUrl"
+    private String baseUrl;
 
     @BeforeEach
     public void setUp() throws java.net.MalformedURLException {
@@ -51,15 +54,15 @@ public class SeleniumTest {
 
         if (ciEnv != null) {
             // Running in Docker/Jenkins
-            // Connect to the "selenium" sidecar container
             driver = new org.openqa.selenium.remote.RemoteWebDriver(
                     new URL("http://selenium:4444/wd/hub"), options);
-            // Jenkins container is named "jenkins" inside the Docker network
             baseUrl = "http://jenkins:9090";
         } else {
             // Local execution
             driver = new ChromeDriver(options);
-            baseUrl = "http://localhost:9090";
+            // Use the actual port the server started on (handles both fixed 9090 or random
+            // 0)
+            baseUrl = "http://localhost:" + port;
         }
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));

@@ -4,6 +4,7 @@ pipeline {
     environment {
         CI = 'true'
         DB_HOST = 'rentacar-postgres'
+        TEST_PORT = '9090'
     }
 
     triggers {
